@@ -107,7 +107,43 @@ def create_filters(date=None, start_date=None, end_date=None,
     :return: A collection of filters for use with `query`.
     """
     # TODO: Decide how you will represent your filters.
-    return ()
+    
+    class dateFilter(AttributeFilter):
+        
+        # does self.op somehow have to be changed to "=" here?
+        
+        @classmethod
+        def get(cls, approach):
+            return approach.time.date()
+        
+        
+    class distanceFilter(AttributeFilter):
+        
+        @classmethod
+        def get(cls, approach):
+            return approach.neo.distance
+        
+    class velocityFilter(AttributeFilter):
+        
+        @classmethod
+        def get(cls, approach):
+            return approach.neo.velocity
+        
+    class diameterFilter(AttributeFilter):
+        
+        @classmethod
+        def get(cls, approach):
+            return approach.diameter
+        
+    class hazardousFilter(AttributeFilter):
+        
+        @classmethod
+        def get(cls, approach):
+            return approach.hazardous
+    
+    collection_of_filters = [dateFilter, distanceFilter, velocityFilter, diameterFilter, hazardousFilter]
+    
+    return collection_of_filters
 
 
 def limit(iterator, n=None):

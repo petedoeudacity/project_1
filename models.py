@@ -52,7 +52,7 @@ class NearEarthObject:
             
         #self.diameter = float('nan')
         if diameter == '':
-            self.diameter = None
+            self.diameter = float('nan')
         else:
             self.diameter = float(diameter)
             

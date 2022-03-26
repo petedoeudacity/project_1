@@ -99,7 +99,7 @@ class NEODatabase:
         for neo in self._neos:
             neo_designations[neo.designation] = neo
             
-        return neo_designations[designation]
+        return neo_designations.get(designation)
 
     def get_neo_by_name(self, name):
         """Find and return an NEO by its name.
