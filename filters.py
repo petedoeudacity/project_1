@@ -70,7 +70,42 @@ class AttributeFilter:
 
     def __repr__(self):
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
+    
+    
+    
+###     subclasses of the AttributeFilter, to be used in the create_filters function   ####
 
+class dateFilter(AttributeFilter):
+        
+        # does self.op somehow have to be changed to "=" here?
+        
+    @classmethod
+    def get(cls, approach):
+        return approach.time.date()
+        
+class distanceFilter(AttributeFilter):
+        
+    @classmethod
+    def get(cls, approach):
+        return approach.distance
+        
+class velocityFilter(AttributeFilter):
+        
+    @classmethod
+    def get(cls, approach):
+        return approach.velocity
+        
+class diameterFilter(AttributeFilter):
+        
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.diameter
+        
+class hazardousFilter(AttributeFilter):
+        
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.hazardous
 
 def create_filters(date=None, start_date=None, end_date=None,
                    distance_min=None, distance_max=None,
@@ -108,43 +143,50 @@ def create_filters(date=None, start_date=None, end_date=None,
     """
     # TODO: Decide how you will represent your filters.
     
-    class dateFilter(AttributeFilter):
-        
-        # does self.op somehow have to be changed to "=" here?
-        
-        @classmethod
-        def get(cls, approach):
-            return approach.time.date()
-        
-        
-    class distanceFilter(AttributeFilter):
-        
-        @classmethod
-        def get(cls, approach):
-            return approach.neo.distance
-        
-    class velocityFilter(AttributeFilter):
-        
-        @classmethod
-        def get(cls, approach):
-            return approach.neo.velocity
-        
-    class diameterFilter(AttributeFilter):
-        
-        @classmethod
-        def get(cls, approach):
-            return approach.diameter
-        
-    class hazardousFilter(AttributeFilter):
-        
-        @classmethod
-        def get(cls, approach):
-            return approach.hazardous
+    filters = []
     
-    collection_of_filters = [dateFilter, distanceFilter, velocityFilter, diameterFilter, hazardousFilter]
+    if date is not None:
+        filter = dateFilter(operator.eq, date)
+        filters.append(filter)
+        
+    if start_date is not None:
+        filter = dateFilter(operator.le, start_date)
+        filters.append(filter)
+        
+    if end_date is not None:
+        filter = dateFilter(operator.ge, end_date)
+        
+    if distance_min is not None:
+        filter = distanceFilter(operator.le, distance_min)
+        filters.append(filter)
+        
+    if distance_max is not None:
+        filter = distanceFilter(operator.ge, distance_max)
+        filters.append(filter)
+        
+    if velocity_min is not None:
+        filter = velocityFilter(operator.le, velocity_min)
+        filters.append(filter)
+        
+    if velocity_max is not None:
+        filter = velocityFilter(operator.ge, velocity_max)
+        filters.append(filter)
+        
+    if diameter_min is not None:
+        filter = diameterFilter(operator.le, diameter_min)
+        filters.append(filter)
+        
+    if diameter_max is not None:
+        filter = diameterFilter(operator.ge, diameter_max)
+        filters.append(filter)
+        
+    if hazardous is not None:
+        filter = hazardousFilter(operator.eq, hazardous)
+        filters.append(filter)
     
-    return collection_of_filters
+    return filters
 
+import itertools
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
@@ -156,4 +198,12 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
     # TODO: Produce at most `n` values from the given iterator.
+    
+    iterator = itertools.islice(iterator, 0, n)
+    
     return iterator
+
+
+
+
+

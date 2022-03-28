@@ -10,7 +10,11 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 `extract.load_approaches`.
 
 You'll edit this file in Tasks 2 and 3.
+
+
 """
+
+
 
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
@@ -67,7 +71,8 @@ class NEODatabase:
         # a collection of close approaches, which is what we want!
         
         for neo in self._neos:
-            neo.approaches = designation_approach_map[neo.designation]
+            if neo.designation in designation_approach_map:                                                 ### ADDED THIS LINE WHEN TESTING
+                neo.approaches = designation_approach_map[neo.designation]
         
         # linking a NEO object to each close approach based on designation...
         # approach.neo represents each individual approach object's 'neo' attribute
@@ -137,6 +142,30 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
+        # if no arguments provided scenario
+        
+        if len(filters) == 0:
+            for approach in self._approaches:
+                yield approach
+        
         # TODO: Generate `CloseApproach` objects that match all of the filters.
-        for approach in self._approaches:
-            yield approach
+        
+        
+        #  else, loop through approaches; w/respect to each approach, loop through the filters -- track w/test variable...
+        else:
+            for approach in self._approaches:
+                test = True
+                for filter in filters:
+                    if not filter(approach):        #   if the approach does not pass the specific filter criterion, change tracker,                                                         break out of loop
+                        test = False
+                        break
+                
+                if test == True:
+                    yield approach
+                    
+                else:
+                    continue
+
+            
+            
+            
